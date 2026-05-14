@@ -2,9 +2,9 @@
 
 namespace EnricoDeLazzari\ClaudeMonitor\Tests;
 
+use EnricoDeLazzari\ClaudeMonitor\ClaudeMonitorServiceProvider;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Orchestra\Testbench\TestCase as Orchestra;
-use EnricoDeLazzari\ClaudeMonitor\ClaudeMonitorServiceProvider;
 
 class TestCase extends Orchestra
 {

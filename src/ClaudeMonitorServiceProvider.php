@@ -2,9 +2,9 @@
 
 namespace EnricoDeLazzari\ClaudeMonitor;
 
+use EnricoDeLazzari\ClaudeMonitor\Commands\ClaudeMonitorCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
-use EnricoDeLazzari\ClaudeMonitor\Commands\ClaudeMonitorCommand;
 
 class ClaudeMonitorServiceProvider extends PackageServiceProvider
 {
