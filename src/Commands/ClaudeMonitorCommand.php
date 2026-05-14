@@ -1,12 +1,12 @@
 <?php
 
-namespace VendorName\Skeleton\Commands;
+namespace EnricoDeLazzari\ClaudeMonitor\Commands;
 
 use Illuminate\Console\Command;
 
-class SkeletonCommand extends Command
+class ClaudeMonitorCommand extends Command
 {
-    public $signature = 'skeleton';
+    public $signature = 'laravel-claude-monitor';
 
     public $description = 'My command';
 
