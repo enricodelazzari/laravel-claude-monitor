@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(composer install *)",
+      "Bash(composer update *)",
+      "Bash(vendor/bin/phpstan analyse *)",
+      "Bash(vendor/bin/pest *)",
+      "Bash(./vendor/bin/phpstan analyse *)",
+      "Bash(composer test *)"
+    ]
+  }
+}
