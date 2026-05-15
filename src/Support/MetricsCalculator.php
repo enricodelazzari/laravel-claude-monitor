@@ -15,7 +15,6 @@ class MetricsCalculator
     ): BudgetMetrics {
         $extraUsage = $usage['extra_usage'] ?? [];
         $currency = $extraUsage['currency'] ?? 'USD';
-        $symbol = $currency === 'USD' ? '$' : $currency.' ';
 
         $spent = (int) ($extraUsage['used_credits'] ?? 0) / 100;
         $totalBudget = $this->resolveTotalBudget((int) ($extraUsage['monthly_limit'] ?? 0), $budgetOverride);
@@ -24,34 +23,32 @@ class MetricsCalculator
 
         $dayOfMonth = $now->day;
         $daysInMonth = $now->daysInMonth;
-        $dailyAverage = $dayOfMonth > 0 ? $spent / $dayOfMonth : 0;
+        $dailyAverage = $dayOfMonth > 0 ? $spent / $dayOfMonth : 0.0;
         $projected = $dailyAverage * $daysInMonth;
-        $percentage = $totalBudget > 0 ? ($spent / $totalBudget) * 100 : 0;
-        $basePercentage = $baseBudget > 0 ? ($spent / $baseBudget) * 100 : 0;
-        $remaining = max(0.0, $totalBudget - $spent);
-        $calendarPct = $daysInMonth > 0 ? ($dayOfMonth / $daysInMonth) * 100 : 0;
-        $basePct = $totalBudget > 0 ? ($baseBudget / $totalBudget) * 100 : 0;
-        $projectedPct = $totalBudget > 0 ? ($projected / $totalBudget) * 100 : 0;
-        $projectedVsBase = $baseBudget > 0 ? ($projected / $baseBudget) * 100 : 0;
 
         return new BudgetMetrics(
             spent: $spent,
             totalBudget: $totalBudget,
             baseBudget: $baseBudget,
             contingencyAmount: $contingencyAmount,
-            remaining: $remaining,
-            percentage: $percentage,
-            basePercentage: $basePercentage,
+            remaining: max(0.0, $totalBudget - $spent),
+            percentage: $this->ratioPct($spent, $totalBudget),
+            basePercentage: $this->ratioPct($spent, $baseBudget),
             dailyAverage: $dailyAverage,
             projected: $projected,
-            projectedPct: $projectedPct,
-            projectedVsBase: $projectedVsBase,
-            calendarPct: $calendarPct,
-            basePct: $basePct,
+            projectedPct: $this->ratioPct($projected, $totalBudget),
+            projectedVsBase: $this->ratioPct($projected, $baseBudget),
+            calendarPct: $this->ratioPct($dayOfMonth, $daysInMonth),
+            basePct: $this->ratioPct($baseBudget, $totalBudget),
             dayOfMonth: $dayOfMonth,
             daysInMonth: $daysInMonth,
-            currencySymbol: $symbol,
+            currencySymbol: $currency === 'USD' ? '$' : $currency.' ',
         );
+    }
+
+    private function ratioPct(float|int $numerator, float|int $denominator): float
+    {
+        return $denominator > 0 ? ($numerator / $denominator) * 100 : 0.0;
     }
 
     private function resolveTotalBudget(int $apiLimitCents, ?float $override): float

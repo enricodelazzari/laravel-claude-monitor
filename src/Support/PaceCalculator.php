@@ -12,38 +12,30 @@ class PaceCalculator
     public function from(BudgetMetrics $budget, Carbon $now): PaceMetrics
     {
         $country = Setting::get('holidays_country', 'it');
-
         $holidays = $this->holidayDates($now, $country);
-        $totalWorkingDays = $this->workingDaysInMonth($now, $holidays);
-        $elapsedWorkingDays = $this->workingDaysElapsed($now, $holidays);
+
+        $startOfMonth = $now->copy()->startOfMonth();
+        $totalWorkingDays = $this->countWorkingDays($startOfMonth, $now->copy()->endOfMonth(), $holidays);
+        $elapsedWorkingDays = $this->countWorkingDays($startOfMonth, $now->copy()->startOfDay(), $holidays);
         $remainingWorkingDays = $totalWorkingDays - $elapsedWorkingDays;
+
         $dailyTarget = $totalWorkingDays > 0 ? $budget->baseBudget / $totalWorkingDays : 0.0;
         $expectedByNow = $dailyTarget * $elapsedWorkingDays;
-
         $remainingBase = max(0.0, $budget->baseBudget - $budget->spent);
-        $budgetPerRemainingDay = $remainingWorkingDays > 0 ? $remainingBase / $remainingWorkingDays : 0.0;
-
-        $variance = $expectedByNow - $budget->spent;
-        $ratio = $expectedByNow > 0 ? $budget->spent / $expectedByNow : 0.0;
-
-        $timePct = $totalWorkingDays > 0 ? ($elapsedWorkingDays / $totalWorkingDays) * 100 : 0.0;
-        $spendingPct = $budget->baseBudget > 0 ? ($budget->spent / $budget->baseBudget) * 100 : 0.0;
-
-        $customDaysOffCount = DayOff::forMonth($now)->count();
 
         return new PaceMetrics(
             holidayLocale: $country,
-            customDaysOffCount: $customDaysOffCount,
+            customDaysOffCount: DayOff::forMonth($now)->count(),
             totalWorkingDays: $totalWorkingDays,
             elapsedWorkingDays: $elapsedWorkingDays,
             remainingWorkingDays: $remainingWorkingDays,
             dailyTarget: $dailyTarget,
             expectedByNow: $expectedByNow,
-            budgetPerRemainingDay: $budgetPerRemainingDay,
-            variance: $variance,
-            ratio: $ratio,
-            timePct: $timePct,
-            spendingPct: $spendingPct,
+            budgetPerRemainingDay: $remainingWorkingDays > 0 ? $remainingBase / $remainingWorkingDays : 0.0,
+            variance: $expectedByNow - $budget->spent,
+            ratio: $expectedByNow > 0 ? $budget->spent / $expectedByNow : 0.0,
+            timePct: $totalWorkingDays > 0 ? ($elapsedWorkingDays / $totalWorkingDays) * 100 : 0.0,
+            spendingPct: $budget->baseBudget > 0 ? ($budget->spent / $budget->baseBudget) * 100 : 0.0,
             holidays: $holidays,
         );
     }
@@ -59,35 +51,19 @@ class PaceCalculator
         $customDaysOff = DayOff::forMonth($now)
             ->pluck('date')
             ->map(fn ($d) => $d->format('Y-m-d'))
-            ->toArray();
+            ->all();
 
-        return array_values(array_unique(array_merge($publicHolidays, $customDaysOff)));
+        return array_values(array_unique([...$publicHolidays, ...$customDaysOff]));
     }
 
     /** @param  list<string>  $holidays */
-    private function workingDaysInMonth(Carbon $now, array $holidays): int
+    private function countWorkingDays(Carbon $start, Carbon $end, array $holidays): int
     {
-        $day = $now->copy()->startOfMonth();
-        $end = $now->copy()->endOfMonth();
+        $day = $start->copy();
         $count = 0;
+
         while ($day <= $end) {
-            if ($day->isWeekday() && ! in_array($day->format('Y-m-d'), $holidays)) {
-                $count++;
-            }
-            $day->addDay();
-        }
-
-        return $count;
-    }
-
-    /** @param  list<string>  $holidays */
-    private function workingDaysElapsed(Carbon $now, array $holidays): int
-    {
-        $day = $now->copy()->startOfMonth();
-        $today = $now->copy()->startOfDay();
-        $count = 0;
-        while ($day <= $today) {
-            if ($day->isWeekday() && ! in_array($day->format('Y-m-d'), $holidays)) {
+            if ($day->isWeekday() && ! in_array($day->format('Y-m-d'), $holidays, true)) {
                 $count++;
             }
             $day->addDay();
