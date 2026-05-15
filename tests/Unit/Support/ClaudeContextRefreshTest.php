@@ -1,8 +1,8 @@
 <?php
 
-use EnricoDeLazzari\ClaudeMonitor\Http\Integrations\ClaudeAi\Requests\GetAccountRequest;
-use EnricoDeLazzari\ClaudeMonitor\Http\Integrations\ClaudeAi\Requests\GetOverageSpendLimitRequest;
-use EnricoDeLazzari\ClaudeMonitor\Http\Integrations\ClaudeAi\Requests\GetUsageRequest;
+use EnricoDeLazzari\ClaudeMonitor\ClaudeAi\Requests\GetAccountRequest;
+use EnricoDeLazzari\ClaudeMonitor\ClaudeAi\Requests\GetOverageSpendLimitRequest;
+use EnricoDeLazzari\ClaudeMonitor\ClaudeAi\Requests\GetUsageRequest;
 use EnricoDeLazzari\ClaudeMonitor\Settings\Contracts\SettingsRepository;
 use EnricoDeLazzari\ClaudeMonitor\Support\ClaudeContext;
 use Illuminate\Foundation\Testing\RefreshDatabase;

@@ -1,6 +1,6 @@
 <?php
 
-namespace EnricoDeLazzari\ClaudeMonitor\Http\Integrations\ClaudeAi\Requests;
+namespace EnricoDeLazzari\ClaudeMonitor\ClaudeAi\Requests;
 
 use Saloon\Enums\Method;
 use Saloon\Http\Request;

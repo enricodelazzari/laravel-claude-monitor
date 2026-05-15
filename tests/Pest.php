@@ -1,9 +1,9 @@
 <?php
 
-use EnricoDeLazzari\ClaudeMonitor\Http\Integrations\ClaudeAi\Requests\GetAccountRequest;
-use EnricoDeLazzari\ClaudeMonitor\Http\Integrations\ClaudeAi\Requests\GetOrganizationsRequest;
-use EnricoDeLazzari\ClaudeMonitor\Http\Integrations\ClaudeAi\Requests\GetOverageSpendLimitRequest;
-use EnricoDeLazzari\ClaudeMonitor\Http\Integrations\ClaudeAi\Requests\GetUsageRequest;
+use EnricoDeLazzari\ClaudeMonitor\ClaudeAi\Requests\GetAccountRequest;
+use EnricoDeLazzari\ClaudeMonitor\ClaudeAi\Requests\GetOrganizationsRequest;
+use EnricoDeLazzari\ClaudeMonitor\ClaudeAi\Requests\GetOverageSpendLimitRequest;
+use EnricoDeLazzari\ClaudeMonitor\ClaudeAi\Requests\GetUsageRequest;
 use EnricoDeLazzari\ClaudeMonitor\Tests\TestCase;
 use Saloon\Http\Faking\MockResponse;
 use Saloon\Laravel\Facades\Saloon;

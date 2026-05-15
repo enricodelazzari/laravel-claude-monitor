@@ -1,11 +1,11 @@
 <?php
 
-namespace EnricoDeLazzari\ClaudeMonitor\Http\Integrations\ClaudeAi\Requests;
+namespace EnricoDeLazzari\ClaudeMonitor\ClaudeAi\Requests;
 
 use Saloon\Enums\Method;
 use Saloon\Http\Request;
 
-class GetOverageSpendLimitRequest extends Request
+class GetUsageRequest extends Request
 {
     protected Method $method = Method::GET;
 
@@ -13,6 +13,6 @@ class GetOverageSpendLimitRequest extends Request
 
     public function resolveEndpoint(): string
     {
-        return "/organizations/{$this->orgId}/overage_spend_limit";
+        return "/organizations/{$this->orgId}/usage";
     }
 }

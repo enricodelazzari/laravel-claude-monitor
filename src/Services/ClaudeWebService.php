@@ -2,11 +2,11 @@
 
 namespace EnricoDeLazzari\ClaudeMonitor\Services;
 
-use EnricoDeLazzari\ClaudeMonitor\Http\Integrations\ClaudeAi\ClaudeConnector;
-use EnricoDeLazzari\ClaudeMonitor\Http\Integrations\ClaudeAi\Requests\GetAccountRequest;
-use EnricoDeLazzari\ClaudeMonitor\Http\Integrations\ClaudeAi\Requests\GetOrganizationsRequest;
-use EnricoDeLazzari\ClaudeMonitor\Http\Integrations\ClaudeAi\Requests\GetOverageSpendLimitRequest;
-use EnricoDeLazzari\ClaudeMonitor\Http\Integrations\ClaudeAi\Requests\GetUsageRequest;
+use EnricoDeLazzari\ClaudeMonitor\ClaudeAi\ClaudeConnector;
+use EnricoDeLazzari\ClaudeMonitor\ClaudeAi\Requests\GetAccountRequest;
+use EnricoDeLazzari\ClaudeMonitor\ClaudeAi\Requests\GetOrganizationsRequest;
+use EnricoDeLazzari\ClaudeMonitor\ClaudeAi\Requests\GetOverageSpendLimitRequest;
+use EnricoDeLazzari\ClaudeMonitor\ClaudeAi\Requests\GetUsageRequest;
 use RuntimeException;
 use Saloon\Http\Request;
 use Saloon\Http\Response;

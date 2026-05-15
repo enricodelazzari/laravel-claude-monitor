@@ -1,6 +1,6 @@
 <?php
 
-namespace EnricoDeLazzari\ClaudeMonitor\Http\Integrations\ClaudeAi;
+namespace EnricoDeLazzari\ClaudeMonitor\ClaudeAi;
 
 use Saloon\Http\Connector;
 
