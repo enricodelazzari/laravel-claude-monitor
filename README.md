@@ -41,6 +41,16 @@ return [
             'connection' => null,
         ],
     ],
+
+    'default_days_off_repository' => env('CLAUDE_MONITOR_DAYS_OFF_REPO', 'database'),
+
+    'days_off_repositories' => [
+        'database' => [
+            'driver' => \EnricoDeLazzari\ClaudeMonitor\DaysOff\Repositories\DatabaseDaysOffRepository::class,
+            'model'  => \EnricoDeLazzari\ClaudeMonitor\Models\DayOff::class,
+            'connection' => null,
+        ],
+    ],
 ];
 ```
 
@@ -142,16 +152,19 @@ The country used for public holidays is read from the `holidays_country` setting
 
 ### Custom days off
 
-Add company-specific or personal days off that should be excluded from the working-day count:
+Add company-specific or personal days off that should be excluded from the working-day count via `DaysOffRepository`:
 
 ```php
-use EnricoDeLazzari\ClaudeMonitor\Models\DayOff;
+use EnricoDeLazzari\ClaudeMonitor\DaysOff\Contracts\DaysOffRepository;
 use Illuminate\Support\Carbon;
 
-DayOff::create(['date' => '2026-08-15', 'note' => 'Company closure']);
+$daysOff = app(DaysOffRepository::class);
 
-// Query days off for a given month
-DayOff::forMonth(Carbon::now())->get();
+$daysOff->add('2026-08-15', 'Company closure'); // add with optional note
+$daysOff->has('2026-08-15');                    // true
+$daysOff->datesForMonth(Carbon::now());         // list<string> of Y-m-d dates
+$daysOff->countForMonth(Carbon::now());         // int
+$daysOff->remove('2026-08-15');
 ```
 
 Past records are automatically pruned via Laravel's `MassPrunable`. Schedule the pruning command in your application:

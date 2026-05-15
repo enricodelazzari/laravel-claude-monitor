@@ -2,6 +2,8 @@
 
 namespace EnricoDeLazzari\ClaudeMonitor;
 
+use EnricoDeLazzari\ClaudeMonitor\DaysOff\Contracts\DaysOffRepository;
+use EnricoDeLazzari\ClaudeMonitor\DaysOff\DaysOffRepositoryFactory;
 use EnricoDeLazzari\ClaudeMonitor\Settings\Contracts\SettingsRepository;
 use EnricoDeLazzari\ClaudeMonitor\Settings\SettingsRepositoryFactory;
 use Spatie\LaravelPackageTools\Package;
@@ -25,6 +27,11 @@ class ClaudeMonitorServiceProvider extends PackageServiceProvider
         $this->app->bind(
             SettingsRepository::class,
             fn () => SettingsRepositoryFactory::create(),
+        );
+
+        $this->app->bind(
+            DaysOffRepository::class,
+            fn () => DaysOffRepositoryFactory::create(),
         );
     }
 }

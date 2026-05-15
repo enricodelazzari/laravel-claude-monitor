@@ -2,7 +2,7 @@
 
 namespace EnricoDeLazzari\ClaudeMonitor\Support;
 
-use EnricoDeLazzari\ClaudeMonitor\Models\DayOff;
+use EnricoDeLazzari\ClaudeMonitor\DaysOff\Contracts\DaysOffRepository;
 use EnricoDeLazzari\ClaudeMonitor\Settings\Contracts\SettingsRepository;
 use Illuminate\Support\Carbon;
 use Spatie\Holidays\Holidays;
@@ -11,6 +11,7 @@ class PaceCalculator
 {
     public function __construct(
         private SettingsRepository $settings,
+        private DaysOffRepository $daysOff,
     ) {}
 
     public function from(BudgetMetrics $budget, Carbon $now): PaceMetrics
@@ -23,25 +24,30 @@ class PaceCalculator
         $elapsedWorkingDays = $this->countWorkingDays($startOfMonth, $now->copy()->startOfDay(), $holidays);
         $remainingWorkingDays = $totalWorkingDays - $elapsedWorkingDays;
 
-        $dailyTarget = $totalWorkingDays > 0 ? $budget->baseBudget / $totalWorkingDays : 0.0;
+        $dailyTarget = $this->safeDivide($budget->baseBudget, $totalWorkingDays);
         $expectedByNow = $dailyTarget * $elapsedWorkingDays;
         $remainingBase = max(0.0, $budget->baseBudget - $budget->spent);
 
         return new PaceMetrics(
             holidayLocale: $country,
-            customDaysOffCount: DayOff::forMonth($now)->count(),
+            customDaysOffCount: $this->daysOff->countForMonth($now),
             totalWorkingDays: $totalWorkingDays,
             elapsedWorkingDays: $elapsedWorkingDays,
             remainingWorkingDays: $remainingWorkingDays,
             dailyTarget: $dailyTarget,
             expectedByNow: $expectedByNow,
-            budgetPerRemainingDay: $remainingWorkingDays > 0 ? $remainingBase / $remainingWorkingDays : 0.0,
+            budgetPerRemainingDay: $this->safeDivide($remainingBase, $remainingWorkingDays),
             variance: $expectedByNow - $budget->spent,
-            ratio: $expectedByNow > 0 ? $budget->spent / $expectedByNow : 0.0,
-            timePct: $totalWorkingDays > 0 ? ($elapsedWorkingDays / $totalWorkingDays) * 100 : 0.0,
-            spendingPct: $budget->baseBudget > 0 ? ($budget->spent / $budget->baseBudget) * 100 : 0.0,
+            ratio: $this->safeDivide($budget->spent, $expectedByNow),
+            timePct: $this->safeDivide($elapsedWorkingDays, $totalWorkingDays) * 100,
+            spendingPct: $this->safeDivide($budget->spent, $budget->baseBudget) * 100,
             holidays: $holidays,
         );
+    }
+
+    private function safeDivide(float|int $numerator, float|int $denominator): float
+    {
+        return $denominator > 0 ? $numerator / $denominator : 0.0;
     }
 
     /** @return list<string> */
@@ -52,10 +58,7 @@ class PaceCalculator
             Holidays::for(country: $country, year: $now->year)->get()
         );
 
-        $customDaysOff = DayOff::forMonth($now)
-            ->pluck('date')
-            ->map(fn ($d) => $d->format('Y-m-d'))
-            ->all();
+        $customDaysOff = $this->daysOff->datesForMonth($now);
 
         return array_values(array_unique([...$publicHolidays, ...$customDaysOff]));
     }
