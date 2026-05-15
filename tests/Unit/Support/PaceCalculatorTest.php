@@ -9,8 +9,7 @@ use Illuminate\Support\Carbon;
 uses(RefreshDatabase::class);
 
 beforeEach(function () {
-    config(['claude-monitor.holidays_country' => 'it']);
-    $this->calc = new PaceCalculator;
+    $this->calc = app(PaceCalculator::class);
 });
 
 function makeBudget(float $spent, float $baseBudget = 300.0): BudgetMetrics

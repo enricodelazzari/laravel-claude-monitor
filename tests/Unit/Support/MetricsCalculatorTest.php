@@ -5,7 +5,7 @@ use EnricoDeLazzari\ClaudeMonitor\Support\MetricsCalculator;
 use Illuminate\Support\Carbon;
 
 beforeEach(function () {
-    $this->calc = new MetricsCalculator;
+    $this->calc = app(MetricsCalculator::class);
 });
 
 it('computes spent in dollars from used_credits cents', function () {

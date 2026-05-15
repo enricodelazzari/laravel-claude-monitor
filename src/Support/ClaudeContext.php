@@ -2,8 +2,8 @@
 
 namespace EnricoDeLazzari\ClaudeMonitor\Support;
 
-use EnricoDeLazzari\ClaudeMonitor\Models\Setting;
 use EnricoDeLazzari\ClaudeMonitor\Services\ClaudeWebService;
+use EnricoDeLazzari\ClaudeMonitor\Settings\Contracts\SettingsRepository;
 use RuntimeException;
 
 class ClaudeContext
@@ -22,6 +22,10 @@ class ClaudeContext
 
     private bool $overageLoaded = false;
 
+    public function __construct(
+        private SettingsRepository $settings,
+    ) {}
+
     public function ensureSessionKey(): void
     {
         if (empty($this->resolveSessionKey())) {
@@ -31,7 +35,9 @@ class ClaudeContext
 
     private function resolveSessionKey(): ?string
     {
-        return Setting::get('session_key');
+        $value = $this->settings->get('session_key');
+
+        return $value === null ? null : (string) $value;
     }
 
     public function refresh(): void

@@ -3,7 +3,7 @@
 use EnricoDeLazzari\ClaudeMonitor\Http\Integrations\ClaudeAi\Requests\GetAccountRequest;
 use EnricoDeLazzari\ClaudeMonitor\Http\Integrations\ClaudeAi\Requests\GetOverageSpendLimitRequest;
 use EnricoDeLazzari\ClaudeMonitor\Http\Integrations\ClaudeAi\Requests\GetUsageRequest;
-use EnricoDeLazzari\ClaudeMonitor\Models\Setting;
+use EnricoDeLazzari\ClaudeMonitor\Settings\Contracts\SettingsRepository;
 use EnricoDeLazzari\ClaudeMonitor\Support\ClaudeContext;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Saloon\Http\Faking\MockClient;
@@ -11,7 +11,7 @@ use Saloon\Http\Faking\MockClient;
 uses(RefreshDatabase::class);
 
 beforeEach(function () {
-    Setting::set('session_key', 'test-session-key');
+    app(SettingsRepository::class)->set('session_key', 'test-session-key');
 });
 
 afterEach(function () {
@@ -20,7 +20,7 @@ afterEach(function () {
 
 it('caches usage between calls and re-fetches after refresh', function () {
     fakeClaudeApi();
-    $ctx = new ClaudeContext;
+    $ctx = app(ClaudeContext::class);
 
     $ctx->usage();
     $ctx->usage();
@@ -35,7 +35,7 @@ it('caches usage between calls and re-fetches after refresh', function () {
 
 it('refresh invalidates account and overage too', function () {
     fakeClaudeApi();
-    $ctx = new ClaudeContext;
+    $ctx = app(ClaudeContext::class);
 
     $ctx->account();
     $ctx->overage();

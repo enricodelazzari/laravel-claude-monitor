@@ -3,15 +3,19 @@
 namespace EnricoDeLazzari\ClaudeMonitor\Support;
 
 use EnricoDeLazzari\ClaudeMonitor\Models\DayOff;
-use EnricoDeLazzari\ClaudeMonitor\Models\Setting;
+use EnricoDeLazzari\ClaudeMonitor\Settings\Contracts\SettingsRepository;
 use Illuminate\Support\Carbon;
 use Spatie\Holidays\Holidays;
 
 class PaceCalculator
 {
+    public function __construct(
+        private SettingsRepository $settings,
+    ) {}
+
     public function from(BudgetMetrics $budget, Carbon $now): PaceMetrics
     {
-        $country = Setting::get('holidays_country', 'it');
+        $country = (string) $this->settings->get('holidays_country', 'it');
         $holidays = $this->holidayDates($now, $country);
 
         $startOfMonth = $now->copy()->startOfMonth();

@@ -2,11 +2,15 @@
 
 namespace EnricoDeLazzari\ClaudeMonitor\Support;
 
-use EnricoDeLazzari\ClaudeMonitor\Models\Setting;
+use EnricoDeLazzari\ClaudeMonitor\Settings\Contracts\SettingsRepository;
 use Illuminate\Support\Carbon;
 
 class MetricsCalculator
 {
+    public function __construct(
+        private SettingsRepository $settings,
+    ) {}
+
     public function from(
         array $usage,
         ?float $budgetOverride,
@@ -53,7 +57,7 @@ class MetricsCalculator
 
     private function resolveTotalBudget(int $apiLimitCents, ?float $override): float
     {
-        $budget = $override ?? (float) Setting::get('monthly_budget', '0');
+        $budget = $override ?? (float) $this->settings->get('monthly_budget', 0);
 
         if ($budget > 0) {
             return $budget;
@@ -64,7 +68,7 @@ class MetricsCalculator
 
     private function resolveContingencyPct(?float $override): float
     {
-        $pct = $override ?? (float) Setting::get('contingency_pct', '0');
+        $pct = $override ?? (float) $this->settings->get('contingency_pct', 0);
 
         return max(0.0, min(100.0, $pct));
     }
